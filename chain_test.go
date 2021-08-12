@@ -1,6 +1,9 @@
 package caip
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+)
 
 // See: https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md#test-cases
 func TestChainID(t *testing.T) {
@@ -46,8 +49,22 @@ func TestChainID(t *testing.T) {
 			t.Errorf("Failed to serialize chain id to string")
 		}
 
-		if _, err := NewChainID(c.Namespace, c.Reference); err != nil {
+		if _, err := new(ChainID).Format(c.Namespace, c.Reference); err != nil {
 			t.Errorf("Failed to create chain id from namespace and reference")
+		}
+
+		b, err := json.Marshal(c)
+		if err != nil {
+			t.Errorf("Failed to marshal to json")
+		}
+
+		c = new(ChainID)
+		if err := json.Unmarshal(b, c); err != nil {
+			t.Errorf("Failed to unmarshal to json")
+		}
+
+		if c.String() != tc.id {
+			t.Errorf("Unmarshalled client id invalid")
 		}
 	}
 }

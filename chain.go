@@ -3,6 +3,7 @@ package caip
 import (
 	"database/sql"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
@@ -19,16 +20,7 @@ var (
 	referenceRegex = regexp.MustCompile("[-a-zA-Z0-9]{1,32}")
 )
 
-func NewChainID(namespace, reference string) (*ChainID, error) {
-	cID := &ChainID{namespace, reference}
-	if err := cID.valid(); err != nil {
-		return nil, err
-	}
-
-	return &ChainID{namespace, reference}, nil
-}
-
-func (c *ChainID) valid() error {
+func (c *ChainID) validate() error {
 	if ok := namespaceRegex.Match([]byte(c.Namespace)); !ok {
 		return errors.New("namespace does not match spec")
 	}
@@ -41,6 +33,9 @@ func (c *ChainID) valid() error {
 }
 
 func (c *ChainID) String() string {
+	if err := c.validate(); err != nil {
+		panic(err)
+	}
 	return c.Namespace + ":" + c.Reference
 }
 
@@ -51,11 +46,44 @@ func (c *ChainID) Parse(s string) (*ChainID, error) {
 	}
 
 	c = &ChainID{split[0], split[1]}
-	if err := c.valid(); err != nil {
+	if err := c.validate(); err != nil {
 		return nil, err
 	}
 
 	return c, nil
+}
+
+func (c *ChainID) UnmarshalJSON(data []byte) error {
+	type ChainIDAlias ChainID
+	ca := (*ChainIDAlias)(c)
+	if err := json.Unmarshal(data, &ca); err != nil {
+		return err
+	}
+
+	if err := c.validate(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *ChainID) MarshalJSON() ([]byte, error) {
+	if err := c.validate(); err != nil {
+		return nil, err
+	}
+
+	type ChainIDAlias ChainID
+	ca := (*ChainIDAlias)(c)
+	return json.Marshal(ca)
+}
+
+func (c *ChainID) Format(namespace, reference string) (*ChainID, error) {
+	cID := &ChainID{namespace, reference}
+	if err := cID.validate(); err != nil {
+		return nil, err
+	}
+
+	return &ChainID{namespace, reference}, nil
 }
 
 func (c *ChainID) Value() (driver.Value, error) {
