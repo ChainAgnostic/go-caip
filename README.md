@@ -2,6 +2,12 @@
 
 [CAIP standard utils](https://github.com/ChainAgnostic/CAIPs)
 
+## Installation
+
+```
+go get github.com/ChainAgnostic/go-caip
+```
+
 ## ChainID (CAIP-2)
 
 ```go
