@@ -35,7 +35,7 @@ func (c *AccountID) String() string {
 }
 
 func (c *AccountID) Parse(s string) (*AccountID, error) {
-	split := strings.Split(s, ":")
+	split := strings.SplitN(s, ":", 3)
 	if len(split) != 3 {
 		return nil, fmt.Errorf("invalid account id: %s", s)
 	}

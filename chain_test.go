@@ -64,7 +64,7 @@ func TestChainID(t *testing.T) {
 		}
 
 		if c.String() != tc.id {
-			t.Errorf("Unmarshalled client id invalid")
+			t.Errorf("Unmarshalled chain id invalid")
 		}
 	}
 }

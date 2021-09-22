@@ -16,17 +16,17 @@ type ChainID struct {
 }
 
 var (
-	namespaceRegex = regexp.MustCompile("[-a-z0-9]{3,8}")
-	referenceRegex = regexp.MustCompile("[-a-zA-Z0-9]{1,32}")
+	chainNamespaceRegex = regexp.MustCompile("[-a-z0-9]{3,8}")
+	chainReferenceRegex = regexp.MustCompile("[-a-zA-Z0-9]{1,32}")
 )
 
 func (c *ChainID) validate() error {
-	if ok := namespaceRegex.Match([]byte(c.Namespace)); !ok {
-		return errors.New("namespace does not match spec")
+	if ok := chainNamespaceRegex.Match([]byte(c.Namespace)); !ok {
+		return errors.New("chain namespace does not match spec")
 	}
 
-	if ok := referenceRegex.Match([]byte(c.Reference)); !ok {
-		return errors.New("namespace does not match spec")
+	if ok := chainReferenceRegex.Match([]byte(c.Reference)); !ok {
+		return errors.New("chain reference does not match spec")
 	}
 
 	return nil
@@ -40,7 +40,7 @@ func (c *ChainID) String() string {
 }
 
 func (c *ChainID) Parse(s string) (*ChainID, error) {
-	split := strings.Split(s, ":")
+	split := strings.SplitN(s, ":", 2)
 	if len(split) != 2 {
 		return nil, fmt.Errorf("invalid chain id: %s", s)
 	}
@@ -83,7 +83,7 @@ func (c *ChainID) Format(namespace, reference string) (*ChainID, error) {
 		return nil, err
 	}
 
-	return &ChainID{namespace, reference}, nil
+	return cID, nil
 }
 
 func (c *ChainID) Value() (driver.Value, error) {

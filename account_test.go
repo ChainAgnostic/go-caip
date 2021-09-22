@@ -35,7 +35,7 @@ func TestAccountID(t *testing.T) {
 		}
 
 		if _, err := new(AccountID).Format(a.ChainID, a.Address); err != nil {
-			t.Errorf("Failed to create account id from namespace and reference")
+			t.Errorf("Failed to create account id from address")
 		}
 
 		b, err := json.Marshal(a)
@@ -49,7 +49,7 @@ func TestAccountID(t *testing.T) {
 		}
 
 		if a.String() != tc.id {
-			t.Errorf("Unmarshalled client id invalid")
+			t.Errorf("Unmarshalled account id invalid")
 		}
 	}
 }
