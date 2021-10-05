@@ -40,8 +40,8 @@ func TestAssetID(t *testing.T) {
 		// CryptoKitties Collectible ID
 		id: "eip155:1/erc721:0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/771769",
 	}} {
-		a, err := new(AssetID).Parse(tc.id)
-		if err != nil {
+		a := AssetID{}
+		if err := a.Parse(tc.id); err != nil {
 			t.Fatalf("Failed to parse asset id: %v", err)
 		}
 
@@ -49,7 +49,7 @@ func TestAssetID(t *testing.T) {
 			t.Fatalf("Failed to serialize asset id to string")
 		}
 
-		if _, err := new(AssetID).Format(a.ChainID, a.Namespace, a.Reference); err != nil {
+		if _, err := NewAssetID(a.ChainID, a.Namespace, a.Reference); err != nil {
 			t.Fatalf("Failed to create asset id from namespace and reference")
 		}
 
@@ -58,13 +58,22 @@ func TestAssetID(t *testing.T) {
 			t.Fatalf("Failed to marshal to json")
 		}
 
-		a = new(AssetID)
-		if err := json.Unmarshal(b, a); err != nil {
+		a = AssetID{}
+		if err := json.Unmarshal(b, &a); err != nil {
 			t.Fatalf("Failed to unmarshal to json")
 		}
 
 		if a.String() != tc.id {
 			t.Fatalf("Unmarshalled asset id invalid")
+		}
+
+		a2 := AssetID{}
+		if err := a2.Scan(a.String()); err != nil {
+			t.Errorf("Scanning value from sql.NullString")
+		}
+
+		if a2.String() != a.String() {
+			t.Errorf("Scanned value not valid")
 		}
 	}
 }

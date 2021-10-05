@@ -25,8 +25,8 @@ func TestAccountID(t *testing.T) {
 		// Dummy max length (64+1+8+1+32 = 106 chars/bytes)
 		id: "chainstd:8c3444cf8970a9e41a706fab93e7a6c4:6d9b0b4b9994e8a6afbd3dc3ed983cd51c755afb27cd1dc7825ef59c134a39f7",
 	}} {
-		a, err := new(AccountID).Parse(tc.id)
-		if err != nil {
+		a := AccountID{}
+		if err := a.Parse(tc.id); err != nil {
 			t.Errorf("Failed to parse account id")
 		}
 
@@ -34,7 +34,7 @@ func TestAccountID(t *testing.T) {
 			t.Errorf("Failed to serialize account id to string")
 		}
 
-		if _, err := new(AccountID).Format(a.ChainID, a.Address); err != nil {
+		if _, err := NewAccountID(a.ChainID, a.Address); err != nil {
 			t.Errorf("Failed to create account id from address")
 		}
 
@@ -43,13 +43,22 @@ func TestAccountID(t *testing.T) {
 			t.Errorf("Failed to marshal to json")
 		}
 
-		a = new(AccountID)
-		if err := json.Unmarshal(b, a); err != nil {
+		a = AccountID{}
+		if err := json.Unmarshal(b, &a); err != nil {
 			t.Errorf("Failed to unmarshal to json")
 		}
 
 		if a.String() != tc.id {
 			t.Errorf("Unmarshalled account id invalid")
+		}
+
+		a2 := AccountID{}
+		if err := a2.Scan(a.String()); err != nil {
+			t.Errorf("Scanning value from sql.NullString")
+		}
+
+		if a2.String() != a.String() {
+			t.Errorf("Scanned value not valid")
 		}
 	}
 }

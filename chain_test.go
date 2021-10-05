@@ -40,8 +40,8 @@ func TestChainID(t *testing.T) {
 		// Dummy max length (8+1+32 = 41 chars/bytes)
 		id: "chainstd:8c3444cf8970a9e41a706fab93e7a6c4",
 	}} {
-		c, err := new(ChainID).Parse(tc.id)
-		if err != nil {
+		c := ChainID{}
+		if err := c.Parse(tc.id); err != nil {
 			t.Errorf("Failed to parse chain id")
 		}
 
@@ -49,7 +49,7 @@ func TestChainID(t *testing.T) {
 			t.Errorf("Failed to serialize chain id to string")
 		}
 
-		if _, err := new(ChainID).Format(c.Namespace, c.Reference); err != nil {
+		if _, err := NewChainID(c.Namespace, c.Reference); err != nil {
 			t.Errorf("Failed to create chain id from namespace and reference")
 		}
 
@@ -58,13 +58,22 @@ func TestChainID(t *testing.T) {
 			t.Errorf("Failed to marshal to json")
 		}
 
-		c = new(ChainID)
-		if err := json.Unmarshal(b, c); err != nil {
+		c = ChainID{}
+		if err := json.Unmarshal(b, &c); err != nil {
 			t.Errorf("Failed to unmarshal to json")
 		}
 
 		if c.String() != tc.id {
 			t.Errorf("Unmarshalled chain id invalid")
+		}
+
+		c2 := ChainID{}
+		if err := c2.Scan(c.String()); err != nil {
+			t.Errorf("Scanning value from sql.NullString")
+		}
+
+		if c2.String() != c.String() {
+			t.Errorf("Scanned value not valid")
 		}
 	}
 }
