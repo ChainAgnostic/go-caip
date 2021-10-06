@@ -62,6 +62,12 @@ func (c *ChainID) Parse(s string) error {
 	return nil
 }
 
+func (c *ChainID) ParseX(s string) {
+	if err := c.Parse(s); err != nil {
+		panic(err)
+	}
+}
+
 func (c *ChainID) UnmarshalJSON(data []byte) error {
 	type ChainIDAlias ChainID
 	ca := (*ChainIDAlias)(c)

@@ -61,6 +61,12 @@ func (c *AccountID) Parse(s string) error {
 	return nil
 }
 
+func (c *AccountID) ParseX(s string) {
+	if err := c.Parse(s); err != nil {
+		panic(err)
+	}
+}
+
 func (c *AccountID) UnmarshalJSON(data []byte) error {
 	type AccountIDAlias AccountID
 	ca := (*AccountIDAlias)(c)

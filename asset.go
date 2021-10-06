@@ -73,6 +73,12 @@ func (a *AssetID) Parse(s string) error {
 	return nil
 }
 
+func (a *AssetID) ParseX(s string) {
+	if err := a.Parse(s); err != nil {
+		panic(err)
+	}
+}
+
 func (a *AssetID) UnmarshalJSON(data []byte) error {
 	type AssetIDAlias AssetID
 	aa := (*AssetIDAlias)(a)
