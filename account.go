@@ -31,7 +31,11 @@ func NewAccountID(chainID ChainID, address string) (AccountID, error) {
 		return AccountID{}, err
 	}
 
-	return AccountID{chainID, address}, nil
+	return aID, nil
+}
+
+func UnsafeAccountID(chainID ChainID, address string) AccountID {
+	return AccountID{chainID, address}
 }
 
 func (c AccountID) validate() error {
@@ -130,6 +134,11 @@ func NewEVMAccountID(chainID ChainID, address string) (EVMAccountID, error) {
 	}
 
 	return EVMAccountID{AccountID: aID}, nil
+}
+
+func UnsafeEVMAccountID(chainID ChainID, address string) EVMAccountID {
+	aID := AccountID{chainID, address}
+	return EVMAccountID{AccountID: aID}
 }
 
 func (a EVMAccountID) Address() common.Address {

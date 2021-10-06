@@ -30,6 +30,10 @@ func NewAssetID(chainID ChainID, namespace, reference string) (AssetID, error) {
 	return aID, nil
 }
 
+func UnsafeAssetID(chainID ChainID, namespace, reference string) AssetID {
+	return AssetID{chainID, namespace, reference}
+}
+
 func (a AssetID) validate() error {
 	if ok := assetNamespaceRegex.Match([]byte(a.Namespace)); !ok {
 		return errors.New("asset namespace does not match spec")

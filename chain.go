@@ -29,6 +29,10 @@ func NewChainID(namespace, reference string) (ChainID, error) {
 	return cID, nil
 }
 
+func UnsafeChainID(namespace, reference string) ChainID {
+	return ChainID{namespace, reference}
+}
+
 func (c ChainID) validate() error {
 	if ok := chainNamespaceRegex.Match([]byte(c.Namespace)); !ok {
 		return errors.New("chain namespace does not match spec")

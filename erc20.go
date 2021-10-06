@@ -16,6 +16,11 @@ func NewERC20AssetID(chainID ChainID, namespace, reference string) (ERC20AssetID
 	return ERC20AssetID{AssetID: aID}, nil
 }
 
+func UnsafeERC20AssetID(chainID ChainID, namespace, reference string) ERC20AssetID {
+	aID := AssetID{chainID, namespace, reference}
+	return ERC20AssetID{AssetID: aID}
+}
+
 func (a ERC20AssetID) Address() common.Address {
 	return common.HexToAddress(a.Reference)
 }

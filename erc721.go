@@ -20,6 +20,11 @@ func NewERC721AssetID(chainID ChainID, namespace, reference string) (ERC721Asset
 	return ERC721AssetID{AssetID: aID}, nil
 }
 
+func UnsafeERC721AssetID(chainID ChainID, namespace, reference string) ERC721AssetID {
+	aID := AssetID{chainID, namespace, reference}
+	return ERC721AssetID{AssetID: aID}
+}
+
 func (a ERC721AssetID) Address() common.Address {
 	split := strings.Split(a.Reference, "/")
 	return common.HexToAddress(split[0])
