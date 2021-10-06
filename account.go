@@ -8,7 +8,13 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
+
+type EVMAddressable interface {
+	Address() common.Address
+}
 
 type AccountID struct {
 	ChainID ChainID `json:"chain_id"`
@@ -20,8 +26,8 @@ var (
 )
 
 func NewAccountID(chainID ChainID, address string) (AccountID, error) {
-	cID := AccountID{chainID, address}
-	if err := cID.validate(); err != nil {
+	aID := AccountID{chainID, address}
+	if err := aID.validate(); err != nil {
 		return AccountID{}, err
 	}
 
@@ -110,4 +116,22 @@ func (c *AccountID) Scan(src interface{}) error {
 	}
 
 	return nil
+}
+
+type EVMAccountID struct {
+	EVMAddressable
+	AccountID
+}
+
+func NewEVMAccountID(chainID ChainID, address string) (EVMAccountID, error) {
+	aID := AccountID{chainID, address}
+	if err := aID.validate(); err != nil {
+		return EVMAccountID{}, err
+	}
+
+	return EVMAccountID{AccountID: aID}, nil
+}
+
+func (a EVMAccountID) Address() common.Address {
+	return common.HexToAddress(a.AccountID.Address)
 }
