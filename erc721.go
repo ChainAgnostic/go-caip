@@ -13,7 +13,7 @@ type ERC721AssetID struct {
 
 func NewERC721AssetID(chainID ChainID, namespace, reference string) (ERC721AssetID, error) {
 	aID := AssetID{chainID, namespace, reference}
-	if err := aID.validate(); err != nil {
+	if err := aID.Validate(); err != nil {
 		return ERC721AssetID{}, err
 	}
 
