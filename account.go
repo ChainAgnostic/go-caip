@@ -27,7 +27,7 @@ var (
 
 func NewAccountID(chainID ChainID, address string) (AccountID, error) {
 	aID := AccountID{chainID, address}
-	if err := aID.validate(); err != nil {
+	if err := aID.Validate(); err != nil {
 		return AccountID{}, err
 	}
 
@@ -38,8 +38,8 @@ func UnsafeAccountID(chainID ChainID, address string) AccountID {
 	return AccountID{chainID, address}
 }
 
-func (c AccountID) validate() error {
-	if err := c.ChainID.validate(); err != nil {
+func (c AccountID) Validate() error {
+	if err := c.ChainID.Validate(); err != nil {
 		return err
 	}
 
@@ -51,7 +51,7 @@ func (c AccountID) validate() error {
 }
 
 func (c AccountID) String() string {
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		panic(err)
 	}
 	return c.ChainID.String() + ":" + c.Address
@@ -64,7 +64,7 @@ func (c *AccountID) Parse(s string) error {
 	}
 
 	*c = AccountID{ChainID{split[0], split[1]}, split[2]}
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
@@ -84,7 +84,7 @@ func (c *AccountID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
@@ -92,7 +92,7 @@ func (c *AccountID) UnmarshalJSON(data []byte) error {
 }
 
 func (c AccountID) MarshalJSON() ([]byte, error) {
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return nil, err
 	}
 
@@ -129,7 +129,7 @@ type EVMAccountID struct {
 
 func NewEVMAccountID(chainID ChainID, address string) (EVMAccountID, error) {
 	aID := AccountID{chainID, address}
-	if err := aID.validate(); err != nil {
+	if err := aID.Validate(); err != nil {
 		return EVMAccountID{}, err
 	}
 

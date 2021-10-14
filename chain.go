@@ -22,7 +22,7 @@ var (
 
 func NewChainID(namespace, reference string) (ChainID, error) {
 	cID := ChainID{namespace, reference}
-	if err := cID.validate(); err != nil {
+	if err := cID.Validate(); err != nil {
 		return ChainID{}, err
 	}
 
@@ -33,7 +33,7 @@ func UnsafeChainID(namespace, reference string) ChainID {
 	return ChainID{namespace, reference}
 }
 
-func (c ChainID) validate() error {
+func (c ChainID) Validate() error {
 	if ok := chainNamespaceRegex.Match([]byte(c.Namespace)); !ok {
 		return errors.New("chain namespace does not match spec")
 	}
@@ -46,7 +46,7 @@ func (c ChainID) validate() error {
 }
 
 func (c ChainID) String() string {
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		panic(err)
 	}
 	return c.Namespace + ":" + c.Reference
@@ -59,7 +59,7 @@ func (c *ChainID) Parse(s string) error {
 	}
 
 	*c = ChainID{split[0], split[1]}
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
@@ -79,7 +79,7 @@ func (c *ChainID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return err
 	}
 
@@ -87,7 +87,7 @@ func (c *ChainID) UnmarshalJSON(data []byte) error {
 }
 
 func (c ChainID) MarshalJSON() ([]byte, error) {
-	if err := c.validate(); err != nil {
+	if err := c.Validate(); err != nil {
 		return nil, err
 	}
 

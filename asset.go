@@ -23,7 +23,7 @@ var (
 
 func NewAssetID(chainID ChainID, namespace, reference string) (AssetID, error) {
 	aID := AssetID{chainID, namespace, reference}
-	if err := aID.validate(); err != nil {
+	if err := aID.Validate(); err != nil {
 		return AssetID{}, err
 	}
 
@@ -34,7 +34,7 @@ func UnsafeAssetID(chainID ChainID, namespace, reference string) AssetID {
 	return AssetID{chainID, namespace, reference}
 }
 
-func (a AssetID) validate() error {
+func (a AssetID) Validate() error {
 	if ok := assetNamespaceRegex.Match([]byte(a.Namespace)); !ok {
 		return errors.New("asset namespace does not match spec")
 	}
@@ -47,7 +47,7 @@ func (a AssetID) validate() error {
 }
 
 func (a AssetID) String() string {
-	if err := a.validate(); err != nil {
+	if err := a.Validate(); err != nil {
 		panic(err)
 	}
 	return a.ChainID.String() + "/" + a.Namespace + ":" + a.Reference
@@ -70,7 +70,7 @@ func (a *AssetID) Parse(s string) error {
 	}
 
 	*a = AssetID{*cID, asset[0], asset[1]}
-	if err := a.validate(); err != nil {
+	if err := a.Validate(); err != nil {
 		return err
 	}
 
@@ -90,7 +90,7 @@ func (a *AssetID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	if err := a.validate(); err != nil {
+	if err := a.Validate(); err != nil {
 		return err
 	}
 
@@ -98,7 +98,7 @@ func (a *AssetID) UnmarshalJSON(data []byte) error {
 }
 
 func (a AssetID) MarshalJSON() ([]byte, error) {
-	if err := a.validate(); err != nil {
+	if err := a.Validate(); err != nil {
 		return nil, err
 	}
 
