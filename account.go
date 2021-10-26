@@ -128,7 +128,7 @@ type EVMAccountID struct {
 }
 
 func NewEVMAccountID(chainID ChainID, address string) (EVMAccountID, error) {
-	aID := AccountID{chainID, address}
+	aID := AccountID{chainID, common.HexToAddress(address).Hex()}
 	if err := aID.Validate(); err != nil {
 		return EVMAccountID{}, err
 	}
@@ -137,7 +137,7 @@ func NewEVMAccountID(chainID ChainID, address string) (EVMAccountID, error) {
 }
 
 func UnsafeEVMAccountID(chainID ChainID, address string) EVMAccountID {
-	aID := AccountID{chainID, address}
+	aID := AccountID{chainID, common.HexToAddress(address).Hex()}
 	return EVMAccountID{AccountID: aID}
 }
 
