@@ -128,13 +128,13 @@ type EVMAccountID struct {
 }
 
 func NewEVMAccountID(chainID ChainID, address string) (EVMAccountID, error) {
-	aID := AccountID{chainID, address}
+	aID := EVMAccountID{AccountID: AccountID{chainID, address}}
 	if err := aID.Validate(); err != nil {
 		return EVMAccountID{}, err
 	}
 
-	aID.Address = common.HexToAddress(aID.Address).Hex()
-	return EVMAccountID{AccountID: aID}, nil
+	aID.AccountID.Address = common.HexToAddress(aID.AccountID.Address).Hex()
+	return aID, nil
 }
 
 func UnsafeEVMAccountID(chainID ChainID, address string) EVMAccountID {
@@ -144,6 +144,10 @@ func UnsafeEVMAccountID(chainID ChainID, address string) EVMAccountID {
 
 func (a EVMAccountID) Validate() error {
 	if ok := common.IsHexAddress(a.AccountID.Address); !ok {
+		return fmt.Errorf("invalid eth address: %s", a.AccountID.Address)
+	}
+
+	if a.ChainID.Namespace != "eip155" {
 		return fmt.Errorf("invalid eth address: %s", a.AccountID.Address)
 	}
 

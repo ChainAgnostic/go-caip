@@ -2,6 +2,8 @@ package caip
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"testing"
 )
 
@@ -59,6 +61,97 @@ func TestAccountID(t *testing.T) {
 
 		if a2.String() != a.String() {
 			t.Errorf("Scanned value not valid")
+		}
+	}
+}
+
+func TestEVMAccountID(t *testing.T) {
+	for _, tc := range []struct {
+		id string
+	}{{
+		// Ethereum mainnet
+		id: "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb",
+	}} {
+		a := EVMAccountID{}
+		if err := a.Parse(tc.id); err != nil {
+			t.Errorf("Failed to parse account id")
+		}
+
+		if a.String() != tc.id {
+			t.Errorf("Failed to serialize account id to string")
+		}
+
+		if _, err := NewEVMAccountID(a.ChainID, a.AccountID.Address); err != nil {
+			t.Errorf("Failed to create account id from address")
+		}
+
+		b, err := json.Marshal(a)
+		if err != nil {
+			t.Errorf("Failed to marshal to json")
+		}
+
+		a = EVMAccountID{}
+		if err := json.Unmarshal(b, &a); err != nil {
+			t.Errorf("Failed to unmarshal to json")
+		}
+
+		if a.String() != tc.id {
+			t.Errorf("Unmarshalled account id invalid")
+		}
+
+		a2 := EVMAccountID{}
+		if err := a2.Scan(a.String()); err != nil {
+			t.Errorf("Scanning value from sql.NullString")
+		}
+
+		if a2.String() != a.String() {
+			t.Errorf("Scanned value not valid")
+		}
+	}
+}
+
+func TestInvalidEVMAccountID(t *testing.T) {
+	for _, tc := range []struct {
+		id  string
+		err error
+	}{{
+		// Ethereum mainnet
+		id:  "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdx",
+		err: fmt.Errorf("invalid eth address: %s", "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdx"),
+	}, {
+		// Ethereum mainnet
+		id:  "eip155:1:0xab16a96d35",
+		err: fmt.Errorf("invalid eth address: %s", "eip155:1:0xab16a96d35"),
+	}, {
+		// Ethereum mainnet
+		id:  "cosmos:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdd",
+		err: fmt.Errorf("invalid eth address: %s", "cosmos:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdd"),
+	}} {
+		a := EVMAccountID{}
+		if err := a.Parse(tc.id); err != nil {
+			t.Errorf("Failed to parse account id")
+		}
+
+		if a.String() != tc.id {
+			t.Errorf("Failed to serialize account id to string")
+		}
+
+		err := a.Validate()
+		if err == nil {
+			t.Errorf("Validate account id should error")
+		}
+
+		if errors.Is(err, tc.err) {
+			t.Errorf("expected error: %s", tc.err)
+		}
+
+		_, err = NewEVMAccountID(a.ChainID, a.AccountID.Address)
+		if err == nil {
+			t.Errorf("Create account id should error")
+		}
+
+		if errors.Is(err, tc.err) {
+			t.Errorf("expected error: %s", tc.err)
 		}
 	}
 }
