@@ -9,12 +9,11 @@ import (
 )
 
 type ERC721AssetID struct {
-	EVMAddressable
-	AssetID
+	EVMAssetID
 }
 
 func NewERC721AssetID(chainID ChainID, namespace, reference string) (ERC721AssetID, error) {
-	aID := ERC721AssetID{AssetID: AssetID{chainID, namespace, reference}}
+	aID := ERC721AssetID{EVMAssetID{AssetID: AssetID{chainID, namespace, reference}}}
 	if err := aID.Validate(); err != nil {
 		return ERC721AssetID{}, err
 	}
@@ -24,17 +23,17 @@ func NewERC721AssetID(chainID ChainID, namespace, reference string) (ERC721Asset
 
 func UnsafeERC721AssetID(chainID ChainID, namespace, reference string) ERC721AssetID {
 	aID := AssetID{chainID, namespace, reference}
-	return ERC721AssetID{AssetID: aID}
+	return ERC721AssetID{EVMAssetID{AssetID: aID}}
 }
 
 func (a ERC721AssetID) Validate() error {
+	if err := a.EVMAssetID.Validate(); err != nil {
+		return err
+	}
+
 	split := strings.Split(a.Reference, "/")
 	if ok := common.IsHexAddress(split[0]); !ok {
 		return fmt.Errorf("invalid eth address: %s", split[0])
-	}
-
-	if a.ChainID.Namespace != "eip155" {
-		return fmt.Errorf("invalid chain namespace: %s", a.ChainID.Namespace)
 	}
 
 	if a.AssetID.Namespace != "erc721" {
@@ -47,7 +46,7 @@ func (a ERC721AssetID) Validate() error {
 		}
 	}
 
-	return a.AssetID.Validate()
+	return nil
 }
 
 func (a ERC721AssetID) Address() common.Address {

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type AssetID struct {
@@ -126,4 +128,41 @@ func (a *AssetID) Scan(src interface{}) error {
 	}
 
 	return nil
+}
+
+type EVMAssetID struct {
+	EVMAddressable
+	AssetID
+}
+
+func NewEVMAssetID(chainID ChainID, namespace, reference string) (EVMAssetID, error) {
+	aID := EVMAssetID{AssetID: AssetID{chainID, namespace, reference}}
+	if err := aID.Validate(); err != nil {
+		return EVMAssetID{}, err
+	}
+
+	return aID, nil
+}
+
+func UnsafeEVMAssetID(chainID ChainID, namespace, reference string) EVMAssetID {
+	aID := AssetID{chainID, namespace, reference}
+	return EVMAssetID{AssetID: aID}
+}
+
+func (a EVMAssetID) Validate() error {
+	split := strings.Split(a.Reference, "/")
+	if ok := common.IsHexAddress(split[0]); !ok {
+		return fmt.Errorf("invalid eth address: %s", split[0])
+	}
+
+	if a.ChainID.Namespace != "eip155" {
+		return fmt.Errorf("invalid chain namespace: %s", a.ChainID.Namespace)
+	}
+
+	return a.AssetID.Validate()
+}
+
+func (a EVMAssetID) Address() common.Address {
+	split := strings.Split(a.Reference, "/")
+	return common.HexToAddress(split[0])
 }
