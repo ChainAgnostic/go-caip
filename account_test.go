@@ -117,15 +117,15 @@ func TestInvalidEVMAccountID(t *testing.T) {
 	}{{
 		// Ethereum mainnet
 		id:  "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdx",
-		err: fmt.Errorf("invalid eth address: %s", "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdx"),
+		err: fmt.Errorf("invalid eth address: %s", "0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdx"),
 	}, {
 		// Ethereum mainnet
 		id:  "eip155:1:0xab16a96d35",
-		err: fmt.Errorf("invalid eth address: %s", "eip155:1:0xab16a96d35"),
+		err: fmt.Errorf("invalid eth address: %s", "0xab16a96d35"),
 	}, {
 		// Ethereum mainnet
 		id:  "cosmos:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdd",
-		err: fmt.Errorf("invalid eth address: %s", "cosmos:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdd"),
+		err: fmt.Errorf("invalid chain namespace: %s", "cosmos"),
 	}} {
 		a := EVMAccountID{}
 		if err := a.Parse(tc.id); err != nil {
@@ -150,8 +150,8 @@ func TestInvalidEVMAccountID(t *testing.T) {
 			t.Errorf("Create account id should error")
 		}
 
-		if errors.Is(err, tc.err) {
-			t.Errorf("expected error: %s", tc.err)
+		if err.Error() != tc.err.Error() {
+			t.Errorf("expected error: %s, got: %s", tc.err, err)
 		}
 	}
 }

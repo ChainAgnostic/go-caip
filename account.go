@@ -148,7 +148,7 @@ func (a EVMAccountID) Validate() error {
 	}
 
 	if a.ChainID.Namespace != "eip155" {
-		return fmt.Errorf("invalid eth address: %s", a.AccountID.Address)
+		return fmt.Errorf("invalid chain namespace: %s", a.ChainID.Namespace)
 	}
 
 	return a.AccountID.Validate()
