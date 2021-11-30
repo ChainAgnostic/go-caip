@@ -140,13 +140,21 @@ func NewEVMAssetID(chainID ChainID, namespace, reference string) (EVMAssetID, er
 	if err := aID.Validate(); err != nil {
 		return EVMAssetID{}, err
 	}
-
+	aID.checksum()
 	return aID, nil
 }
 
 func UnsafeEVMAssetID(chainID ChainID, namespace, reference string) EVMAssetID {
-	aID := AssetID{chainID, namespace, reference}
-	return EVMAssetID{AssetID: aID}
+	aID := EVMAssetID{AssetID: AssetID{chainID, namespace, reference}}
+	aID.checksum()
+	return aID
+}
+
+func (a EVMAssetID) checksum() {
+	split := strings.Split(a.Reference, "/")
+	// Make reference checksummed
+	split[0] = a.Address().Hex()
+	a.Reference = strings.Join(split, "/")
 }
 
 func (a EVMAssetID) Validate() error {
