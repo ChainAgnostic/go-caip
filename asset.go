@@ -150,7 +150,7 @@ func UnsafeEVMAssetID(chainID ChainID, namespace, reference string) EVMAssetID {
 	return aID
 }
 
-func (a EVMAssetID) checksum() {
+func (a *EVMAssetID) checksum() {
 	split := strings.Split(a.Reference, "/")
 	// Make reference checksummed
 	split[0] = a.Address().Hex()
