@@ -174,3 +174,7 @@ func (a EVMAssetID) Address() common.Address {
 	split := strings.Split(a.Reference, "/")
 	return common.HexToAddress(split[0])
 }
+
+func (a EVMAssetID) AccountID() EVMAccountID {
+	return EVMAccountID{AccountID: AccountID{a.ChainID, a.Namespace}}
+}
