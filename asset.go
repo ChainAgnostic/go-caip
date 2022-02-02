@@ -176,5 +176,5 @@ func (a EVMAssetID) Address() common.Address {
 }
 
 func (a EVMAssetID) AccountID() EVMAccountID {
-	return EVMAccountID{AccountID: AccountID{a.ChainID, a.Namespace}}
+	return EVMAccountID{AccountID: AccountID{a.ChainID, a.Reference}}
 }
