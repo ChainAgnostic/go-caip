@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -117,6 +119,20 @@ func (c *AccountID) Scan(src interface{}) error {
 
 	if err := c.Parse(i.String); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (c AccountID) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(strings.ToUpper(c.String())))
+}
+
+func (c *AccountID) UnmarshalGQL(v interface{}) error {
+	if id, ok := v.(string); ok {
+		if err := c.Parse(id); err != nil {
+			return fmt.Errorf("unmarshalling account id: %w", err)
+		}
 	}
 
 	return nil

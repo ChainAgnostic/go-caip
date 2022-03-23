@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -125,6 +127,20 @@ func (a *AssetID) Scan(src interface{}) error {
 
 	if err := a.Parse(i.String); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (a AssetID) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(strings.ToUpper(a.String())))
+}
+
+func (a *AssetID) UnmarshalGQL(v interface{}) error {
+	if id, ok := v.(string); ok {
+		if err := a.Parse(id); err != nil {
+			return fmt.Errorf("unmarshalling asset id: %w", err)
+		}
 	}
 
 	return nil

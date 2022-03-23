@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -112,6 +114,20 @@ func (c *ChainID) Scan(src interface{}) error {
 
 	if err := c.Parse(i.String); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (c ChainID) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(strings.ToUpper(c.String())))
+}
+
+func (c *ChainID) UnmarshalGQL(v interface{}) error {
+	if id, ok := v.(string); ok {
+		if err := c.Parse(id); err != nil {
+			return fmt.Errorf("unmarshalling account id: %w", err)
+		}
 	}
 
 	return nil
