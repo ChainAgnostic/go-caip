@@ -70,7 +70,7 @@ func TestEVMAccountID(t *testing.T) {
 		id string
 	}{{
 		// Ethereum mainnet
-		id: "eip155:1:0xab16a96d359ec26a11e2c2b3d8f8b8942d5bfcdb",
+		id: "eip155:1:0xab16a96D359eC26a11e2C2b3d8f8B8942d5Bfcdb",
 	}} {
 		a := EVMAccountID{}
 		if err := a.Parse(tc.id); err != nil {

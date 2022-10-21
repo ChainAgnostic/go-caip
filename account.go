@@ -158,6 +158,16 @@ func UnsafeEVMAccountID(chainID ChainID, address string) EVMAccountID {
 	return EVMAccountID{AccountID: aID}
 }
 
+func (c *EVMAccountID) Parse(s string) error {
+	if err := c.AccountID.Parse(s); err != nil {
+		return err
+	}
+
+	c.AccountID.Address = common.HexToAddress(c.AccountID.Address).Hex()
+
+	return nil
+}
+
 func (a EVMAccountID) Validate() error {
 	if ok := common.IsHexAddress(a.AccountID.Address); !ok {
 		return fmt.Errorf("invalid eth address: %s", a.AccountID.Address)
